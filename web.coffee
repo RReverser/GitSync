@@ -7,7 +7,7 @@ app.get '/', (request, response)->
   response.send 'Hello World!'
 
 app.post '/commit/bitbucket', (request, response)->
-  console.log request.payload
+  console.log request.body.payload
   response.send "OK"
 
 port = process.env.PORT || 5000
