@@ -19,7 +19,7 @@ app.post '/commit/bitbucket', (request, response) ->
   payload = JSON.parse request.body.payload
   git_url = "ssh://git@bitbucket.org/#{payload.repository.owner}/#{payload.repository.name}.git"
   res = mappings.filter (pair) ->
-    pair.bitbucket == url
+    pair.bitbucket == git_url
   pair = res[0]
   fs.exists pair.local (exists) ->
     if exists
