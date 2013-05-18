@@ -16,7 +16,7 @@ app.get '/', (request, response) ->
   response.send 'Hello World!'
 
 app.post '/commit/bitbucket', (request, response) ->
-  payload = request.body.payload
+  payload = JSON.parse request.body.payload
   git_url = "ssh://git@bitbucket.org/#{payload.repository.owner}/#{payload.repository.name}.git"
   res = mappings.filter (pair) ->
     pair.bitbucket == url
