@@ -6,7 +6,7 @@ app.use express.bodyParser()
 app.get '/', (request, response)->
   response.send 'Hello World!'
 
-app.get '/commit/bitbucket', (request, response)->
+app.post '/commit/bitbucket', (request, response)->
   console.log request.query
   response.send "OK"
 
