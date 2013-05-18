@@ -1,6 +1,10 @@
 express = require "express"
 app = express()
 
+templates =
+  github: "git@github.com:balbeko/douhack_sync.git"
+  bitbucket: "ssh://git@bitbucket.org/balbeko/douhack_sync.git"
+
 mapping = []
 mapping.push
   github:"balbeko/douhack_sync"
