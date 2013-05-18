@@ -23,7 +23,7 @@ app.post '/commit/bitbucket', (request, response) ->
     pair.bitbucket == relative_url
   pair = res[0]
   fs.exists pair.local, (exists) ->
-    if exists
+    if !exists
       exec "git clone #{git_url} -o bitbucket #{pair.local} && cd #{pair.local} && git remote add github #{pair.github}", (err, out) ->
         console.log "Created repo from bitbucket. Log:\n#{out}"
     else
