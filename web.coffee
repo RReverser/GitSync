@@ -13,7 +13,6 @@ mapping.push
 app.use express.logger()
 app.use express.bodyParser()
 
-
 app.get '/', (request, response)->
   response.send 'Hello World!'
 
