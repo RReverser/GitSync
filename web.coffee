@@ -25,10 +25,10 @@ app.post '/commit/bitbucket', (request, response) ->
   fs.exists pair.local, (exists) ->
     if !exists
       exec "git clone #{git_url} -o bitbucket #{pair.local} && cd #{pair.local} && git remote add github #{pair.github}", (err, out, outErr) ->
-        console.log "Created repo from bitbucket. Output:\n#{out}\nErrors:#{outErr}"
+        console.log "Creation...\n#{out}\n#{outErr}"
     else
       exec "git pull bitbucket --all", (err, out, outErr) ->
-        console.log "Updated repo from bitbucket. Output:\n#{out}\nErrors:#{outErr}"
+        console.log "Updating...\n#{out}\n#{outErr}"
     response.send "OK"
 
 port = process.env.PORT || 5000
