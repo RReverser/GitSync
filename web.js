@@ -11,6 +11,10 @@ var servers = {
 
 var mappings = JSON.parse(fs.readFileSync('mappings.json'));
 
+mappings.forEach(function (mapping) {
+	mapping.local = 'projects/' + mapping.local;
+})
+
 app.use(express.bodyParser());
 
 function gitSpawn(args, callback, cwd) {
@@ -21,21 +25,21 @@ function gitSpawn(args, callback, cwd) {
 	return git;
 }
 
-function mergePair(pair, callback) {
-	fs.exists(pair.local, function (exists) {
+function mergeMapping(mapping, callback) {
+	fs.exists(mapping.local, function (exists) {
 		(function (commandsCallback) {
 			if (!exists) {     
-				console.log('Creating ' + pair.local + '...');
-				gitSpawn(['init', pair.local], function (err) {
+				console.log('Creating ' + mapping.local + '...');
+				gitSpawn(['init', mapping.local], function (err) {
 					if (err) return callback(err);
 					var gitCmds = [];
 					for (var name in servers) {
-						gitCmds.push(['remote', 'add', name, servers[name].replace('{relative_url}', pair[name])]);
+						gitCmds.push(['remote', 'add', name, servers[name].replace('{relative_url}', mapping[name])]);
 					}
 					commandsCallback(gitCmds);
 				});
 			} else {
-				console.log('Updating ' + pair.local + '...');
+				console.log('Updating ' + mapping.local + '...');
 				commandsCallback([]);
 			}
 		})(function (gitCmds) {
@@ -50,25 +54,25 @@ function mergePair(pair, callback) {
 			}
 
 			async.eachSeries(gitCmds, function (gitArgs, eachCallback) {
-				gitSpawn(gitArgs, eachCallback, pair.local);
+				gitSpawn(gitArgs, eachCallback, mapping.local);
 			}, callback);
 		});
 	});
 }
 
 console.log("Initializing...");
-async.each(mappings, mergePair, function (err) {
+async.each(mappings, mergeMapping, function (err) {
 	if (err) return console.log(err);
 
 	function merge(source, request, getRelativePath, callback) {
 		fs.writeFile('logs/' + Date.now() + '.' + source + '.json', request.body.payload);
 
 		var relative_url = getRelativePath(JSON.parse(request.body.payload));
-		var pairs = mappings.filter(function (pair) { return pair[source] === relative_url });
+		var mappings = mappings.filter(function (mapping) { return mapping[source] === relative_url });
 
-		if (pairs.length === 0) return callback("Unknown repository.");
+		if (mappings.length === 0) return callback("Unknown repository.");
 
-		return mergePair(pairs[0], callback);
+		return mergeMapping(mappings[0], callback);
 	}
 
 	app.post('/commit/bitbucket', function (request, response) {
